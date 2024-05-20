@@ -224,6 +224,10 @@ ifeq ($(TARGET_RPI),1) # Define RPi to change SDL2 title & GLES2 hints
       VERSION_CFLAGS += -DUSE_GLES
 endif
 
+ifeq ($(TARGET_WEBOS),1) # On WEBOS we use GLES
+      VERSION_CFLAGS += -DUSE_GLES -DTARGET_WEBOS
+endif
+
 ifeq ($(OSX_BUILD),1) # Modify GFX & SDL2 for OSX GL
      VERSION_CFLAGS += -DOSX_BUILD
 endif
@@ -287,8 +291,16 @@ BUILD_DIR_BASE := build
 
 ifeq ($(TARGET_WEB),1)
   BUILD_DIR := $(BUILD_DIR_BASE)/$(VERSION)_web
-else
-  BUILD_DIR := $(BUILD_DIR_BASE)/$(VERSION)_pc
+  else 
+    ifeq ($(TARGET_RPI),1)
+      BUILD_DIR := $(BUILD_DIR_BASE)/$(VERSION)_rpi
+    else 
+      ifeq ($(TARGET_WEBOS),1)
+        BUILD_DIR := $(BUILD_DIR_BASE)/$(VERSION)_webos
+      else
+        BUILD_DIR := $(BUILD_DIR_BASE)/$(VERSION)_pc
+      endif
+  endif
 endif
 
 LIBULTRA := $(BUILD_DIR)/libultra.a
@@ -302,8 +314,12 @@ EXE := $(BUILD_DIR)/$(TARGET).html
 		else # Linux builds/binary namer
 		ifeq ($(TARGET_RPI),1)
 			EXE := $(BUILD_DIR)/$(TARGET).arm
-		else
-			EXE := $(BUILD_DIR)/$(TARGET)
+    else
+      ifeq ($(TARGET_WEBOS),1)
+        EXE := $(BUILD_DIR)/webos/sm64ex
+      else
+        EXE := $(BUILD_DIR)/$(TARGET)
+        endif
 		endif
 	endif
 endif
@@ -682,7 +698,7 @@ else ifeq ($(HOST_OS),Haiku)
   LDFLAGS := $(BACKEND_LDFLAGS) -no-pie
 
 else
-  LDFLAGS := $(BITS) -march=$(TARGET_ARCH) -lm $(BACKEND_LDFLAGS) -lpthread -ldl
+  LDFLAGS := $(BITS)  -lm $(BACKEND_LDFLAGS) -lpthread -ldl
   ifeq ($(NO_PIE), 1)
     LDFLAGS += -no-pie
   endif
@@ -722,7 +738,13 @@ ZEROTERM = $(PYTHON) $(TOOLS_DIR)/zeroterm.py
 
 ######################## Targets #############################
 
-all: $(EXE)
+copy-appinfo:
+ifeq ($(TARGET_WEBOS),1)
+	mkdir -p $(BUILD_DIR)/webos
+		cp tools/webos/* $(BUILD_DIR)/webos
+endif
+
+all: $(EXE) copy-appinfo
 
 # thank you apple very cool
 ifeq ($(HOST_OS),Darwin)
@@ -744,7 +766,7 @@ res: $(BASEPACK_PATH)
 
 # prepares the basepack.lst
 $(BASEPACK_LST): $(EXE)
-	@mkdir -p $(BUILD_DIR)/$(BASEDIR)
+	@mkdir -p $(BUILD_DIR)/$(BASEDIR)/webos
 	@touch $(BASEPACK_LST)
 	@echo "$(BUILD_DIR)/sound/bank_sets sound/bank_sets" > $(BASEPACK_LST)
 	@echo "$(BUILD_DIR)/sound/sequences.bin sound/sequences.bin" >> $(BASEPACK_LST)

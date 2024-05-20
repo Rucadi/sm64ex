@@ -1,9 +1,9 @@
 {
     "id": "com.sm64.sm64ex",
     "version": "0.0.1",
-    "vendor": "My Company",
+    "vendor": "Super Mario 64 webos",
     "type": "native",
-    "main": "sm64",
+    "main": "sm64ex",
     "title": "sm64",
     "icon": "icon.png"
 }
