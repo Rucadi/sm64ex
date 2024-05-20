@@ -112,7 +112,7 @@ void sys_fatal(const char *fmt, ...) {
     sys_fatal_impl(msg);
 }
 
-#ifdef HAVE_SDL2
+#ifdef HAVE_SDL2_SAVEDATA_PATHS
 
 // TEMPORARY: check the old save folder and copy contents to the new path
 // this will be removed after a while
@@ -194,7 +194,11 @@ static void sys_fatal_impl(const char *msg) {
 #warning "You might want to implement these functions for your platform"
 
 const char *sys_user_path(void) {
+    #ifdef TARGET_WEBOS
+    return "./res";
+    #else
     return ".";
+    #endif
 }
 
 const char *sys_exe_path(void) {

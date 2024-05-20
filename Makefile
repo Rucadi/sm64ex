@@ -225,7 +225,7 @@ ifeq ($(TARGET_RPI),1) # Define RPi to change SDL2 title & GLES2 hints
 endif
 
 ifeq ($(TARGET_WEBOS),1) # On WEBOS we use GLES
-      VERSION_CFLAGS += -DUSE_GLES -DTARGET_WEBOS
+      VERSION_CFLAGS += -DUSE_GLES -DTARGET_WEBOS -DHAVE_SDL2=1
 endif
 
 ifeq ($(OSX_BUILD),1) # Modify GFX & SDL2 for OSX GL
@@ -741,7 +741,7 @@ ZEROTERM = $(PYTHON) $(TOOLS_DIR)/zeroterm.py
 copy-appinfo:
 ifeq ($(TARGET_WEBOS),1)
 	mkdir -p $(BUILD_DIR)/webos
-		cp tools/webos/* $(BUILD_DIR)/webos
+		cp -r tools/webos/* $(BUILD_DIR)/webos
 endif
 
 all: $(EXE) copy-appinfo
