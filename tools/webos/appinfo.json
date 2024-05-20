@@ -1,0 +1,9 @@
+{
+    "id": "com.sm64.sm64ex",
+    "version": "0.0.1",
+    "vendor": "My Company",
+    "type": "native",
+    "main": "sm64",
+    "title": "sm64",
+    "icon": "icon.png"
+}

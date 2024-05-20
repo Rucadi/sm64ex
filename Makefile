@@ -24,6 +24,12 @@ NON_MATCHING ?= 1
 # Build and optimize for Raspberry Pi(s)
 TARGET_RPI ?= 0
 
+# Build and optimize for WebOS
+TARGET_WEBOS ?= 0
+ifeq ($(TARGET_WEBOS),1)
+  TARGET_ARCH ?= armv8.1-a
+endif
+
 # Build for Emscripten/WebGL
 TARGET_WEB ?= 0
 
@@ -526,6 +532,8 @@ else ifeq ($(findstring SDL,$(WINDOW_API)),SDL)
   ifeq ($(WINDOWS_BUILD),1)
     BACKEND_LDFLAGS += -lglew32 -lglu32 -lopengl32
   else ifeq ($(TARGET_RPI),1)
+    BACKEND_LDFLAGS += -lGLESv2
+  else ifeq ($(TARGET_WEBOS),1)
     BACKEND_LDFLAGS += -lGLESv2
   else ifeq ($(OSX_BUILD),1)
     BACKEND_LDFLAGS += -framework OpenGL $(shell pkg-config --libs glew)
